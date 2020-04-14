@@ -14,7 +14,7 @@ const jwt = new Jwt();
 
 const router: Router = Router();
 
-router.post('/customer', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   let username: string = req.body.username;
   let password: string = req.body.password;
 
@@ -25,10 +25,17 @@ router.post('/customer', async (req: Request, res: Response) => {
     let rs: any = await loginModel.login(db, username, encPassword);
 
     if (rs.length) {
-
       let payload = {
-        fullname: `${rs[0].first_name} ${rs[0].last_name}`,
-        id: rs[0].user_id,
+        id: rs[0].id,
+        username: rs[0].userName,
+        name: rs[0].name,
+        position_name: rs[0].positionName,
+        department_name: rs[0].departmentName,
+        province_name: rs[0].provinceName,
+        create_date: rs[0].createDate,
+        update_date: rs[0].updateDate,
+        zone_code: rs[0].zoneCode,
+        user_types: rs[0].userTypes
       }
 
       let token = jwt.sign(payload);

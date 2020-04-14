@@ -1,8 +1,9 @@
 /// <reference path="../typings.d.ts" />
-
-require('dotenv').config();
-
 import * as path from 'path';
+
+let envPath = path.join(__dirname, '../api-config');
+require('dotenv').config({ path: envPath });
+
 import * as logger from 'morgan';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
@@ -18,10 +19,11 @@ import { Jwt } from './models/jwt';
 
 import indexRoute from './routes/index';
 import loginRoute from './routes/login';
-import requestRoute from './routes/request';
+import userRoute from './routes/user';
 
 // Assign router to the express.Router() instance
 const app: express.Application = express();
+const api: express.Application = express();
 
 const jwt = new Jwt();
 
@@ -70,7 +72,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 let checkAuth = (req: Request, res: Response, next: NextFunction) => {
-  let token: string = null;
+  let token: any = null;
 
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
     token = req.headers.authorization.split(' ')[1];
@@ -94,7 +96,8 @@ let checkAuth = (req: Request, res: Response, next: NextFunction) => {
 }
 
 app.use('/login', loginRoute);
-app.use('/api', checkAuth, requestRoute);
+app.use('/api', checkAuth, api);
+api.use('/user', userRoute);
 app.use('/', indexRoute);
 
 //error handlers
